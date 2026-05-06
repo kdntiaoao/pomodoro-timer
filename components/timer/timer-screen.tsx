@@ -9,6 +9,7 @@ import {
 } from "@/components/providers/app-provider";
 import { SettingsDialog } from "@/components/settings/settings-dialog";
 import { Button } from "@/components/ui/button";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { usePhaseCompletionNotification } from "@/hooks/use-phase-completion-notification";
 import { useSessionRecorder } from "@/hooks/use-session-recorder";
 import { useTimer } from "@/hooks/use-timer";
@@ -45,6 +46,8 @@ export function TimerScreen() {
 
   const phaseLabel = timer.phase === "work" ? "作業" : "休憩";
   const isActive = timer.status !== "idle";
+  const remainingText = formatRemaining(timer.remainingMs);
+  useDocumentTitle(`${remainingText} ${phaseLabel} - ポモドーロ`);
 
   return (
     <div className="flex flex-col items-center gap-8">
@@ -54,7 +57,7 @@ export function TimerScreen() {
       </div>
       <section
         role="timer"
-        aria-label={`${phaseLabel}タイマー 残り ${formatRemaining(timer.remainingMs)}`}
+        aria-label={`${phaseLabel}タイマー 残り ${remainingText}`}
         className="flex flex-col items-center gap-8"
       >
         <PresetSelector
@@ -67,7 +70,7 @@ export function TimerScreen() {
           {phaseLabel}
         </p>
         <p className="font-mono text-7xl font-semibold tabular-nums tracking-tight sm:text-8xl">
-          {formatRemaining(timer.remainingMs)}
+          {remainingText}
         </p>
         <div className="flex gap-3">
           {timer.status === "idle" && (
