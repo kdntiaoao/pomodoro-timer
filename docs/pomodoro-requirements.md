@@ -24,6 +24,36 @@
   - `setInterval` の精度に依存せず、`Date.now()` との差分で残り時間を算出
   - バックグラウンドタブでもズレない
 
+#### 状態機械
+
+- 状態:
+  - `idle` … 開始前(リセット直後を含む)
+  - `running` … カウントダウン中
+  - `paused` … 一時停止中(残り ms を保持)
+- フェーズ: `work` / `break`
+- 遷移:
+
+```text
+idle    --start-->     running
+running --pause-->     paused
+paused  --resume-->    running
+running --reset-->     idle
+paused  --reset-->     idle
+running --フェーズ満了--> 通知発火 → 次フェーズへ
+                          - 自動遷移 ON: 次フェーズ `running` (即継続)
+                          - 自動遷移 OFF: 次フェーズ `idle` (ユーザー操作待ち)
+```
+
+#### リセット仕様
+
+- 現フェーズの残り時間を、現在選択中プリセットの初期値に戻し `idle` へ遷移
+- フェーズ種別(work / break)はリセット時点のまま保持(サイクル先頭への巻き戻しはしない)
+
+#### 一時停止 / 再開仕様
+
+- 一時停止: 一時停止時点の残り ms を保持、`Date.now()` ベースの算出を停止
+- 再開: `endAt = Date.now() + 残り ms` で終了予定時刻を再計算して `running` へ復帰
+
 ### 3.2 プリセット
 
 - 複数プリセットを名前付きで保存可能
