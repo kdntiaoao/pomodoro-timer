@@ -1,20 +1,29 @@
 "use client";
 
+import { PresetSelector } from "@/components/timer/preset-selector";
 import { Button } from "@/components/ui/button";
+import { usePresets } from "@/hooks/use-presets";
 import { useTimer } from "@/hooks/use-timer";
 import { formatRemaining } from "@/lib/timer/compute-remaining";
 
-const DEFAULT_WORK_MINUTES = 25;
-const DEFAULT_BREAK_MINUTES = 5;
+const FALLBACK_WORK_MINUTES = 25;
+const FALLBACK_BREAK_MINUTES = 5;
 
 export function TimerScreen() {
+  const presets = usePresets();
+  const workMinutes =
+    presets.selectedPreset?.workMinutes ?? FALLBACK_WORK_MINUTES;
+  const breakMinutes =
+    presets.selectedPreset?.breakMinutes ?? FALLBACK_BREAK_MINUTES;
+
   const timer = useTimer({
-    workMinutes: DEFAULT_WORK_MINUTES,
-    breakMinutes: DEFAULT_BREAK_MINUTES,
+    workMinutes,
+    breakMinutes,
     autoTransition: false,
   });
 
   const phaseLabel = timer.phase === "work" ? "作業" : "休憩";
+  const isActive = timer.status !== "idle";
 
   return (
     <section
@@ -22,6 +31,12 @@ export function TimerScreen() {
       aria-label={`${phaseLabel}タイマー 残り ${formatRemaining(timer.remainingMs)}`}
       className="flex flex-col items-center gap-8"
     >
+      <PresetSelector
+        presets={presets.presets}
+        selectedId={presets.selectedPresetId}
+        onSelect={presets.selectPreset}
+        disabled={isActive || !presets.hydrated}
+      />
       <p className="text-lg font-medium tracking-wide text-muted-foreground">
         {phaseLabel}
       </p>
