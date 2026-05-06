@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback } from "react";
+import { HistoryDialog } from "@/components/history/history-dialog";
 import { PresetSelector } from "@/components/timer/preset-selector";
 import {
   usePresetsContext,
@@ -8,8 +10,10 @@ import {
 import { SettingsDialog } from "@/components/settings/settings-dialog";
 import { Button } from "@/components/ui/button";
 import { usePhaseCompletionNotification } from "@/hooks/use-phase-completion-notification";
+import { useSessionRecorder } from "@/hooks/use-session-recorder";
 import { useTimer } from "@/hooks/use-timer";
 import { formatRemaining } from "@/lib/timer/compute-remaining";
+import type { TimerPhase } from "@/lib/types";
 
 const FALLBACK_WORK_MINUTES = 25;
 const FALLBACK_BREAK_MINUTES = 5;
@@ -22,7 +26,15 @@ export function TimerScreen() {
   const breakMinutes =
     presets.selectedPreset?.breakMinutes ?? FALLBACK_BREAK_MINUTES;
 
-  const onPhaseComplete = usePhaseCompletionNotification();
+  const notify = usePhaseCompletionNotification();
+  const recordSession = useSessionRecorder();
+  const onPhaseComplete = useCallback(
+    (completedPhase: TimerPhase) => {
+      notify(completedPhase);
+      recordSession(completedPhase);
+    },
+    [notify, recordSession],
+  );
 
   const timer = useTimer({
     workMinutes,
@@ -36,7 +48,8 @@ export function TimerScreen() {
 
   return (
     <div className="flex flex-col items-center gap-8">
-      <div className="flex w-full justify-end">
+      <div className="flex w-full justify-end gap-1">
+        <HistoryDialog />
         <SettingsDialog />
       </div>
       <section
