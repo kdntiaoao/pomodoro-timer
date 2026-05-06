@@ -61,6 +61,13 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
 - 初回起動時に「クラシック 25/5」を 1 件デフォルトで投入
 - 保存先: localStorage
 
+#### 走行中の切替・編集
+
+- タイマーが `running` または `paused` の状態では、選択中プリセットの切替・編集・削除は不可 (UI 上 disabled)
+- `idle` で初めて切替・編集・削除が可能
+- 削除対象が現在選択中プリセットの場合、削除後は残存プリセットの先頭を自動選択
+- 全プリセット削除は不可 (最低 1 件残す)
+
 ### 3.3 状態遷移
 
 - 作業 → 休憩 → 作業 → … のループ
@@ -109,6 +116,14 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
   - 音量
   - 自動遷移の有効/無効
   - テーマ(ライト / ダーク / システム連動)
+
+#### 走行中の設定変更挙動
+
+- `volume`: 即時反映(次回再生する音から新音量)
+- `notificationEnabled`: 即時反映
+- `autoTransition`: 即時反映(次回フェーズ満了時から新挙動)
+- `theme`: 即時反映
+- プリセット内容変更は 3.2 の制約に従う(`running`/`paused` 中は当該プリセット編集不可)
 
 ### 3.7 PWA
 
@@ -175,10 +190,31 @@ type Settings = {
 
 | キー | 値 |
 |------|-----|
-| `pomodoro:presets` | `Preset[]` |
-| `pomodoro:sessions` | `Session[]` |
-| `pomodoro:settings` | `Settings` |
-| `pomodoro:selectedPresetId` | `string` |
+| `pomodoro:presets` | `Stored<Preset[]>` |
+| `pomodoro:sessions` | `Stored<Session[]>` |
+| `pomodoro:settings` | `Stored<Settings>` |
+| `pomodoro:selectedPresetId` | `Stored<string>` |
+
+### スキーマ管理
+
+各 localStorage 値はラッパー型 `Stored<T>` で保持し `schemaVersion` を付ける。
+
+```typescript
+type Stored<T> = {
+  schemaVersion: number;
+  data: T;
+};
+```
+
+- 現行 `schemaVersion` は 1
+- 将来の breaking change 時はバージョンを上げてマイグレーション関数で旧形式を変換
+- バージョンが想定外(未来 or 不明値)の場合は当該キーを破棄してデフォルト復元
+
+### 容量・破損対応
+
+- `pomodoro:sessions` は **直近 365 日分** を保持上限。超過分は `completedAt` の古い順に破棄
+- `JSON.parse` 失敗 / スキーマ検証失敗時は当該キーを破棄してデフォルト値で復元(意味のあるエラーは silently swallow せず、開発時は `console.warn` で記録)
+- 書き込み時 `QuotaExceededError` をキャッチした場合、`sessions` を最古から段階的に削減して再試行
 
 ## 7. 主要な設計判断のメモ
 
