@@ -10,11 +10,11 @@
 
 | コマンド      | 用途                                                 |
 | ------------- | ---------------------------------------------------- |
-| `pnpm dev`    | Next.js dev server (Next 16 は Turbopack デフォルト) |
-| `pnpm build`  | プロダクションビルド                                 |
-| `pnpm start`  | ビルド済みプロダクションサーバ起動                   |
-| `pnpm lint`   | ESLint (flat config, `eslint.config.mjs`)            |
-| `pnpm format` | Prettier 全体書き込み                                |
+| `pnpm dev`    | Next.js dev server (Next 16 は Turbopack デフォルト)              |
+| `pnpm build`  | 静的書き出し (`output: 'export'` → `out/`)                        |
+| `pnpm start`  | `out/` を `serve` で配信 (build 済み静的サイトのローカル確認)     |
+| `pnpm lint`   | ESLint (flat config, `eslint.config.mjs`)                         |
+| `pnpm format` | Prettier 全体書き込み                                             |
 
 `type-check` script・テストランナーは未設定。型チェック単発実行は `pnpm exec tsc --noEmit`。共通 rules では Vitest 言及あるが本リポジトリ未導入 → ユーザ確認なしにテスト導入しない。
 
