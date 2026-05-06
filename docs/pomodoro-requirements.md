@@ -12,7 +12,7 @@
 - shadcn/ui (Radix UI ベース)
 - テーマ切替: `next-themes` (`class` strategy で `<html>` に `light`/`dark` 付与)
 - 永続化: localStorage
-- PWA: Service Worker (`next-pwa` または `@serwist/next`)
+- PWA: 自前 Service Worker (依存最小化のため `@serwist/next` 等のライブラリ不採用、`public/sw.js` で cache-first runtime caching を最小実装)
 - 言語: 日本語固定 (UI コピーは日本語、`<html lang="ja">`)
 
 ## 3. 機能要件
@@ -162,6 +162,25 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
 - Service Worker によるアセットキャッシュ
 - **オフライン対応の範囲**: タブが開いている前提で、ネット切断時もアプリ起動・タイマー動作・通知発火が可能
 - タブを閉じた状態でのバックグラウンド通知は対象外(Web Push は使わない)
+
+#### Manifest 仕様
+
+- 配置: `app/manifest.ts` (Next 16 の `MetadataRoute.Manifest` 型で生成)
+- `name`: `ポモドーロタイマー`、`short_name`: `ポモドーロ`、`description`: `シンプルなポモドーロタイマー`
+- `start_url`: `/`、`scope`: `/`、`display`: `standalone`、`orientation`: `portrait`
+- `lang`: `ja`、`dir`: `ltr`
+- `theme_color`: ライト時 `#ffffff`、`background_color`: `#ffffff`
+- アイコン: `public/icons/icon-192.svg` と `icon-512.svg` (SVG ベースで maskable / any 兼用)
+
+#### Service Worker 仕様
+
+- 配置: `public/sw.js` (Next.js が `/sw.js` で配信)
+- 登録: `components/pwa/sw-register.tsx` で `navigator.serviceWorker.register('/sw.js')`、本番ビルド (`process.env.NODE_ENV === 'production'`) のみ実行
+- キャッシュ戦略:
+  - `install` 時にコアアセット (`/`, `/manifest.webmanifest`, アイコン) をプリキャッシュ
+  - `fetch` は **cache-first → network fallback**、Next の `_next/static/*` も同様
+  - ナビゲーションリクエスト (HTML) は network-first にして更新を反映、失敗時に cache fallback
+  - キャッシュ名は `pomodoro-cache-v1`、バージョン更新で旧キャッシュを `activate` 時にクリア
 
 ### 3.8 その他 UX
 
