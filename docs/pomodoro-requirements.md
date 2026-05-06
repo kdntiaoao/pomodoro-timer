@@ -9,9 +9,11 @@
 - Next.js (App Router)
 - TypeScript
 - Tailwind CSS
-- shadcn/ui
+- shadcn/ui (Radix UI ベース)
+- テーマ切替: `next-themes` (`class` strategy で `<html>` に `light`/`dark` 付与)
 - 永続化: localStorage
 - PWA: Service Worker (`next-pwa` または `@serwist/next`)
+- 言語: 日本語固定 (UI コピーは日本語、`<html lang="ja">`)
 
 ## 3. 機能要件
 
@@ -134,9 +136,22 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
 
 ### 3.8 その他 UX
 
-- ダークモード(Tailwind の `dark:` プレフィックス + shadcn/ui のテーマ機構)
+- ダークモード(Tailwind の `dark:` プレフィックス + shadcn/ui のテーマ機構 + `next-themes`)
 - `<title>` に残り時間を表示(例: `25:00 - ポモドーロ`)
 - モバイルレスポンシブ対応(PWA 前提)
+
+#### 画面レイアウト
+
+- ヘッダー右上にアイコンボタン群を横並び配置
+  - 設定アイコン → 設定 Dialog を開く
+  - 履歴アイコン → 履歴画面に遷移(フェーズ 6 で実装)
+- メインエリア中央: プリセット選択 → フェーズラベル → 残り時間 → 操作ボタン群
+
+#### アクセシビリティ
+
+- Dialog のフォーカストラップは Radix UI の標準実装に依拠
+- 残り時間表示は `role="timer"` + `aria-label` でフェーズと残り時間を提示。秒単位の `aria-live` 更新は読み上げ過剰のため避け、フェーズ切替時のラベル更新でのみ通知
+- 操作ボタンは状態 (`idle`/`running`/`paused`) に応じて表示切替するが、`disabled` 属性は通常状態の見た目を維持し、無効ケースは可視性を損なわない
 
 ## 4. 非機能要件
 
@@ -182,8 +197,10 @@ type Settings = {
   notificationEnabled: boolean;
   volume: number; // 0-100
   autoTransition: boolean;
-  theme: 'light' | 'dark' | 'system';
 };
+
+// テーマは next-themes が独立して localStorage に保存(キーは `pomodoro:theme`)
+type ThemeMode = 'light' | 'dark' | 'system';
 ```
 
 ### localStorage キー
@@ -194,6 +211,7 @@ type Settings = {
 | `pomodoro:sessions` | `Stored<Session[]>` |
 | `pomodoro:settings` | `Stored<Settings>` |
 | `pomodoro:selectedPresetId` | `Stored<string>` |
+| `pomodoro:theme` | `ThemeMode` (next-themes が直接管理。`Stored<T>` ラッパーなし) |
 
 ### スキーマ管理
 
