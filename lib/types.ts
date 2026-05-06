@@ -31,5 +31,4 @@ export type Settings = {
   notificationEnabled: boolean;
   volume: number;
   autoTransition: boolean;
-  theme: ThemeMode;
 };
