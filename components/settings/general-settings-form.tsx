@@ -5,6 +5,7 @@ import { useSettingsContext } from "@/components/providers/app-provider";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { requestNotificationPermission } from "@/lib/notification/browser-notification";
 
 const THEME_OPTIONS: ReadonlyArray<{ value: "light" | "dark" | "system"; label: string }> = [
   { value: "light", label: "ライト" },
@@ -16,6 +17,15 @@ export function GeneralSettingsForm() {
   const { settings, updateSettings } = useSettingsContext();
   const { theme, setTheme } = useTheme();
 
+  const handleNotificationToggle = async (checked: boolean) => {
+    if (!checked) {
+      updateSettings({ notificationEnabled: false });
+      return;
+    }
+    const permission = await requestNotificationPermission();
+    updateSettings({ notificationEnabled: permission === "granted" });
+  };
+
   return (
     <div className="flex flex-col gap-6 py-2">
       <div className="flex items-center justify-between">
@@ -23,9 +33,9 @@ export function GeneralSettingsForm() {
         <Switch
           id="settings-notification"
           checked={settings.notificationEnabled}
-          onCheckedChange={(checked) =>
-            updateSettings({ notificationEnabled: checked })
-          }
+          onCheckedChange={(checked) => {
+            void handleNotificationToggle(checked);
+          }}
         />
       </div>
 

@@ -7,6 +7,7 @@ import {
 } from "@/components/providers/app-provider";
 import { SettingsDialog } from "@/components/settings/settings-dialog";
 import { Button } from "@/components/ui/button";
+import { usePhaseCompletionNotification } from "@/hooks/use-phase-completion-notification";
 import { useTimer } from "@/hooks/use-timer";
 import { formatRemaining } from "@/lib/timer/compute-remaining";
 
@@ -21,10 +22,13 @@ export function TimerScreen() {
   const breakMinutes =
     presets.selectedPreset?.breakMinutes ?? FALLBACK_BREAK_MINUTES;
 
+  const onPhaseComplete = usePhaseCompletionNotification();
+
   const timer = useTimer({
     workMinutes,
     breakMinutes,
     autoTransition: settings.autoTransition,
+    onPhaseComplete,
   });
 
   const phaseLabel = timer.phase === "work" ? "作業" : "休憩";
