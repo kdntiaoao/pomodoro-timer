@@ -9,24 +9,30 @@ const HOUR_IN_MILLISECONDS = 60 * MINUTE_IN_MILLISECONDS;
 const DAY_IN_MILLISECONDS = 24 * HOUR_IN_MILLISECONDS;
 
 interface Props {
-  initial: {
+  duration: {
     hours?: number;
     minutes?: number;
     seconds?: number;
   };
 }
 
-export function Timer({ initial }: Props) {
+export function Timer({ duration: initial }: Props) {
   const [isRunning, setIsRunning] = useState(false);
-  const initialTime =
+  const durationMs =
     (initial.hours ?? 0) * HOUR_IN_MILLISECONDS +
     (initial.minutes ?? 0) * MINUTE_IN_MILLISECONDS +
     (initial.seconds ?? 0) * SECOND_IN_MILLISECONDS;
-  const [countdown, setCountdown] = useState(initialTime);
+  const [remainingMs, setRemainingMs] = useState(durationMs);
+  const [pausedRemainingMs, setPausedRemainingMs] = useState(durationMs);
   const animationFrameIdRef = useRef<number>(null);
 
   const startTimer = () => {
     setIsRunning(true);
+  };
+
+  const stopTimer = () => {
+    setIsRunning(false);
+    setPausedRemainingMs(remainingMs);
   };
 
   useEffect(() => {
@@ -38,7 +44,7 @@ export function Timer({ initial }: Props) {
     }
 
     const now = performance.now();
-    const countdownTo = now + initialTime;
+    const countdownTo = now + pausedRemainingMs;
 
     const countdown = () => {
       // 描画用の残り時間を毎フレーム更新する
@@ -47,11 +53,10 @@ export function Timer({ initial }: Props) {
 
       // 期限切れなら終了メッセージを表示して処理を止める
       if (timeLeft < 0) {
-        // TODO: 終了メッセージを表示するロジックを追加する
         return;
       }
 
-      setCountdown(timeLeft);
+      setRemainingMs(timeLeft);
 
       // 次のフレームで再描画する
       animationFrameIdRef.current = requestAnimationFrame(countdown);
@@ -64,12 +69,13 @@ export function Timer({ initial }: Props) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [isRunning, initialTime]);
+  }, [isRunning, pausedRemainingMs]);
 
   return (
     <div>
-      <p>{formatTimeLeft(countdown)}</p>
+      <p>{formatTimeLeft(remainingMs)}</p>
       <Button onClick={startTimer}>start</Button>
+      <Button onClick={stopTimer}>stop</Button>
     </div>
   );
 }
