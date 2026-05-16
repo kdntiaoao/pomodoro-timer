@@ -6,7 +6,6 @@ import { Button } from "./ui/button";
 const SECOND_IN_MILLISECONDS = 1000;
 const MINUTE_IN_MILLISECONDS = 60 * SECOND_IN_MILLISECONDS;
 const HOUR_IN_MILLISECONDS = 60 * MINUTE_IN_MILLISECONDS;
-const DAY_IN_MILLISECONDS = 24 * HOUR_IN_MILLISECONDS;
 
 interface Props {
   duration: {
@@ -81,11 +80,10 @@ export function Timer({ duration: initial }: Props) {
 }
 
 function formatTimeLeft(timeLeft: number): string {
-  const daysLeft = Math.floor(timeLeft / DAY_IN_MILLISECONDS);
-
-  const hoursLeft = Math.floor(
-    (timeLeft % DAY_IN_MILLISECONDS) / HOUR_IN_MILLISECONDS,
-  ).toLocaleString("en-US", { minimumIntegerDigits: 2 });
+  const hoursLeft = Math.floor(timeLeft / HOUR_IN_MILLISECONDS).toLocaleString(
+    "en-US",
+    { minimumIntegerDigits: 2 },
+  );
 
   const minutesLeft = Math.floor(
     (timeLeft % HOUR_IN_MILLISECONDS) / MINUTE_IN_MILLISECONDS,
@@ -95,5 +93,5 @@ function formatTimeLeft(timeLeft: number): string {
     (timeLeft % MINUTE_IN_MILLISECONDS) / SECOND_IN_MILLISECONDS,
   ).toLocaleString("en-US", { minimumIntegerDigits: 2 });
 
-  return `${daysLeft}d:${hoursLeft}h:${minutesLeft}m:${secondsLeft}s`;
+  return `${hoursLeft}h:${minutesLeft}m:${secondsLeft}s`;
 }
