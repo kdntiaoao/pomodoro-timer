@@ -1,26 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
+import { SettingsContext } from "./app-provider";
 
 const SECOND_IN_MILLISECONDS = 1000;
 const MINUTE_IN_MILLISECONDS = 60 * SECOND_IN_MILLISECONDS;
 const HOUR_IN_MILLISECONDS = 60 * MINUTE_IN_MILLISECONDS;
 
-interface Props {
-  duration: {
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-  };
-}
-
-export function Timer({ duration: initial }: Props) {
+export function Timer() {
+  const settings = useContext(SettingsContext);
   const [isRunning, setIsRunning] = useState(false);
   const durationMs =
-    (initial.hours ?? 0) * HOUR_IN_MILLISECONDS +
-    (initial.minutes ?? 0) * MINUTE_IN_MILLISECONDS +
-    (initial.seconds ?? 0) * SECOND_IN_MILLISECONDS;
+    (settings?.duration.hours ?? 0) * HOUR_IN_MILLISECONDS +
+    (settings?.duration.minutes ?? 0) * MINUTE_IN_MILLISECONDS +
+    (settings?.duration.seconds ?? 0) * SECOND_IN_MILLISECONDS;
   const [remainingMs, setRemainingMs] = useState(durationMs);
   const [pausedRemainingMs, setPausedRemainingMs] = useState(durationMs);
   const animationFrameIdRef = useRef<number>(null);
@@ -32,6 +26,12 @@ export function Timer({ duration: initial }: Props) {
   const stopTimer = () => {
     setIsRunning(false);
     setPausedRemainingMs(remainingMs);
+  };
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setRemainingMs(durationMs);
+    setPausedRemainingMs(durationMs);
   };
 
   useEffect(() => {
@@ -75,6 +75,7 @@ export function Timer({ duration: initial }: Props) {
       <p>{formatTimeLeft(remainingMs)}</p>
       <Button onClick={startTimer}>start</Button>
       <Button onClick={stopTimer}>stop</Button>
+      <Button onClick={resetTimer}>reset</Button>
     </div>
   );
 }
