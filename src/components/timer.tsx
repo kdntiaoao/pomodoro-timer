@@ -19,16 +19,16 @@ export function Timer() {
   const [pausedRemainingMs, setPausedRemainingMs] = useState(durationMs);
   const animationFrameIdRef = useRef<number>(null);
 
-  const startTimer = () => {
+  const start = () => {
     setIsRunning(true);
   };
 
-  const stopTimer = () => {
+  const pause = () => {
     setIsRunning(false);
     setPausedRemainingMs(remainingMs);
   };
 
-  const resetTimer = () => {
+  const reset = () => {
     setIsRunning(false);
     setRemainingMs(durationMs);
     setPausedRemainingMs(durationMs);
@@ -73,9 +73,9 @@ export function Timer() {
   return (
     <div>
       <p>{formatTimeLeft(remainingMs)}</p>
-      <Button onClick={startTimer}>start</Button>
-      <Button onClick={stopTimer}>stop</Button>
-      <Button onClick={resetTimer}>reset</Button>
+      <Button onClick={start}>start</Button>
+      <Button onClick={pause}>pause</Button>
+      <Button onClick={reset}>reset</Button>
     </div>
   );
 }
