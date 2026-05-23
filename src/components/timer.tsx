@@ -81,18 +81,13 @@ export function Timer() {
 }
 
 function formatTimeLeft(timeLeft: number): string {
-  const hoursLeft = Math.floor(timeLeft / HOUR_IN_MILLISECONDS).toLocaleString(
-    "en-US",
-    { minimumIntegerDigits: 2 },
-  );
-
   const minutesLeft = Math.floor(
-    (timeLeft % HOUR_IN_MILLISECONDS) / MINUTE_IN_MILLISECONDS,
+    timeLeft / MINUTE_IN_MILLISECONDS,
   ).toLocaleString("en-US", { minimumIntegerDigits: 2 });
 
   const secondsLeft = Math.floor(
     (timeLeft % MINUTE_IN_MILLISECONDS) / SECOND_IN_MILLISECONDS,
   ).toLocaleString("en-US", { minimumIntegerDigits: 2 });
 
-  return `${hoursLeft}h:${minutesLeft}m:${secondsLeft}s`;
+  return `${minutesLeft}:${secondsLeft}`;
 }
