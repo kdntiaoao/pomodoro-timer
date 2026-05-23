@@ -80,9 +80,9 @@ export function Timer() {
   return (
     <div>
       <p>{formatTimeLeft(displayMs)}</p>
-      <Button onClick={start}>start</Button>
-      <Button onClick={pause}>pause</Button>
-      <Button onClick={reset}>reset</Button>
+      {!isRunning && <Button onClick={start}>start</Button>}
+      {isRunning && <Button onClick={pause}>pause</Button>}
+      {isStarted && <Button onClick={reset}>reset</Button>}
     </div>
   );
 }
