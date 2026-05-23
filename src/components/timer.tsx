@@ -10,16 +10,24 @@ const HOUR_IN_MILLISECONDS = 60 * MINUTE_IN_MILLISECONDS;
 
 export function Timer() {
   const settings = useContext(SettingsContext);
+  const [isStarted, setIsStarted] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const durationMs =
     (settings?.duration.hours ?? 0) * HOUR_IN_MILLISECONDS +
     (settings?.duration.minutes ?? 0) * MINUTE_IN_MILLISECONDS +
     (settings?.duration.seconds ?? 0) * SECOND_IN_MILLISECONDS;
-  const [remainingMs, setRemainingMs] = useState(durationMs);
-  const [pausedRemainingMs, setPausedRemainingMs] = useState(durationMs);
+  const [remainingMs, setRemainingMs] = useState(0);
+  const [pausedRemainingMs, setPausedRemainingMs] = useState(0);
   const animationFrameIdRef = useRef<number>(null);
 
+  const displayMs = isStarted ? remainingMs : durationMs;
+
   const start = () => {
+    if (!isStarted) {
+      setRemainingMs(durationMs);
+      setPausedRemainingMs(durationMs);
+    }
+    setIsStarted(true);
     setIsRunning(true);
   };
 
@@ -29,9 +37,8 @@ export function Timer() {
   };
 
   const reset = () => {
+    setIsStarted(false);
     setIsRunning(false);
-    setRemainingMs(durationMs);
-    setPausedRemainingMs(durationMs);
   };
 
   useEffect(() => {
@@ -72,7 +79,7 @@ export function Timer() {
 
   return (
     <div>
-      <p>{formatTimeLeft(remainingMs)}</p>
+      <p>{formatTimeLeft(displayMs)}</p>
       <Button onClick={start}>start</Button>
       <Button onClick={pause}>pause</Button>
       <Button onClick={reset}>reset</Button>
