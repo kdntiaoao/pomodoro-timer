@@ -6,26 +6,24 @@ import { SettingsContext } from "./app-provider";
 
 const SECOND_IN_MILLISECONDS = 1000;
 const MINUTE_IN_MILLISECONDS = 60 * SECOND_IN_MILLISECONDS;
-const HOUR_IN_MILLISECONDS = 60 * MINUTE_IN_MILLISECONDS;
 
 export function Timer() {
   const settings = useContext(SettingsContext);
   const [isStarted, setIsStarted] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
-  const durationMs =
-    (settings?.duration.hours ?? 0) * HOUR_IN_MILLISECONDS +
-    (settings?.duration.minutes ?? 0) * MINUTE_IN_MILLISECONDS +
-    (settings?.duration.seconds ?? 0) * SECOND_IN_MILLISECONDS;
+  const workingDurationMs =
+    (settings?.workingDuration.minutes ?? 0) * MINUTE_IN_MILLISECONDS +
+    (settings?.workingDuration.seconds ?? 0) * SECOND_IN_MILLISECONDS;
   const [remainingMs, setRemainingMs] = useState(0);
   const [pausedRemainingMs, setPausedRemainingMs] = useState(0);
   const animationFrameIdRef = useRef<number>(null);
 
-  const displayMs = isStarted ? remainingMs : durationMs;
+  const displayMs = isStarted ? remainingMs : workingDurationMs;
 
   const start = () => {
     if (!isStarted) {
-      setRemainingMs(durationMs);
-      setPausedRemainingMs(durationMs);
+      setRemainingMs(workingDurationMs);
+      setPausedRemainingMs(workingDurationMs);
     }
     setIsStarted(true);
     setIsRunning(true);

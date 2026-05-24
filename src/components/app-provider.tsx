@@ -8,28 +8,30 @@ import {
 } from "react";
 
 interface Settings {
-  duration: {
-    hours: number;
+  workingDuration: {
+    minutes: number;
+    seconds: number;
+  };
+  breakDuration: {
     minutes: number;
     seconds: number;
   };
 }
 
 const initialSettings: Settings = {
-  duration: {
-    hours: 0,
-    minutes: 1,
-    seconds: 0,
+  workingDuration: {
+    minutes: 0,
+    seconds: 15,
+  },
+  breakDuration: {
+    minutes: 0,
+    seconds: 10,
   },
 };
 
 export const SettingsContext = createContext<Settings | null>(null);
 export const SettingsDispatchContext = createContext<ActionDispatch<
-  [
-    action: {
-      duration: Partial<Settings["duration"]>;
-    },
-  ]
+  [action: Settings]
 > | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -44,15 +46,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 }
 
-function settingsReducer(
-  _: Settings,
-  action: { duration: Partial<Settings["duration"]> },
-) {
+function settingsReducer(_: Settings, action: Settings) {
   return {
-    duration: {
-      hours: action.duration.hours ?? 0,
-      minutes: action.duration.minutes ?? 0,
-      seconds: action.duration.seconds ?? 0,
+    workingDuration: {
+      minutes: action.workingDuration.minutes ?? 0,
+      seconds: action.workingDuration.seconds ?? 0,
+    },
+    breakDuration: {
+      minutes: action.breakDuration.minutes ?? 0,
+      seconds: action.breakDuration.seconds ?? 0,
     },
   };
 }
