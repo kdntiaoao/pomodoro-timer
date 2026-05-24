@@ -3,7 +3,7 @@ description: staged 差分 (空時 unstaged) から conventional commit message 
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git ls-files:*)
 ---
 
-現在の git 差分を読み取り、`.claude/rules/common/git-workflow.md` 規約に従ったコミットメッセージを提案。**コミット自体は実行しない。** 提案出力のみ。
+現在の git 差分を読み取り、コミットメッセージを提案。**コミット自体は実行しない。** 提案出力のみ。
 
 ## 対象範囲
 
@@ -51,10 +51,12 @@ prefix:
 ### Body
 
 - 日本語
+- 箇条書き
 - 敬語・丁寧語禁止（です / ます / ございます 不可）、体言止め・用言止め
   - 修正しました → 修正
   - 対応しています → 対応
   - 追加しました → 追加
+- 現在形
 - 変更内容理解に役立つ場合のみ記述
 - subject と body の間に空行 1 行
 
@@ -65,9 +67,3 @@ prefix:
 
 <日本語の body>
 ```
-
-## 出力
-
-- コミットメッセージのコードブロック **のみ** 出力。前置き・後置き・補足説明・対象差分の種別案内 (staged / unstaged) ・コミット実行案内など一切付加しない
-- `$ARGUMENTS` は意図ヒントとして内部勘案のみ。出力には反映しない
-- 例外: staged / unstaged / 未追跡 全て空の場合のみ、コードブロックの代わりに 1 行で「コミット可能な差分なし」と報告 (出力不能時の必須報告)
