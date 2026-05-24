@@ -21,11 +21,11 @@ interface Settings {
 const initialSettings: Settings = {
   workingDuration: {
     minutes: 0,
-    seconds: 15,
+    seconds: 10,
   },
   breakDuration: {
     minutes: 0,
-    seconds: 10,
+    seconds: 5,
   },
 };
 

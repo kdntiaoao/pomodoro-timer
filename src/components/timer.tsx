@@ -4,6 +4,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { SettingsContext } from "./app-provider";
 
+type Mode = "working" | "break";
+
 const SECOND_IN_MILLISECONDS = 1000;
 const MINUTE_IN_MILLISECONDS = 60 * SECOND_IN_MILLISECONDS;
 
@@ -11,9 +13,13 @@ export function Timer() {
   const settings = useContext(SettingsContext);
   const [isStarted, setIsStarted] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const [mode, setMode] = useState<Mode>("working");
   const workingDurationMs =
     (settings?.workingDuration.minutes ?? 0) * MINUTE_IN_MILLISECONDS +
     (settings?.workingDuration.seconds ?? 0) * SECOND_IN_MILLISECONDS;
+  const breakDurationMs =
+    (settings?.breakDuration.minutes ?? 0) * MINUTE_IN_MILLISECONDS +
+    (settings?.breakDuration.seconds ?? 0) * SECOND_IN_MILLISECONDS;
   const [remainingMs, setRemainingMs] = useState(0);
   const [pausedRemainingMs, setPausedRemainingMs] = useState(0);
   const animationFrameIdRef = useRef<number>(null);
@@ -55,8 +61,20 @@ export function Timer() {
       const currentTime = performance.now();
       const timeLeft = countdownTo - currentTime;
 
-      // 期限切れなら終了メッセージを表示して処理を止める
       if (timeLeft < 0) {
+        setIsRunning(false);
+        if (mode === "working") {
+          setMode("break");
+          setRemainingMs(breakDurationMs);
+          setPausedRemainingMs(breakDurationMs);
+        } else {
+          setMode("working");
+          setRemainingMs(workingDurationMs);
+          setPausedRemainingMs(workingDurationMs);
+        }
+        window.setTimeout(() => {
+          setIsRunning(true);
+        }, 1000);
         return;
       }
 
@@ -73,11 +91,11 @@ export function Timer() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [isRunning, pausedRemainingMs]);
+  }, [breakDurationMs, isRunning, mode, pausedRemainingMs, workingDurationMs]);
 
   return (
     <div>
-      <p>{formatTimeLeft(displayMs)}</p>
+      <p className="text-4xl">{formatTimeLeft(displayMs)}</p>
       {!isRunning && <Button onClick={start}>start</Button>}
       {isRunning && <Button onClick={pause}>pause</Button>}
       {isStarted && <Button onClick={reset}>reset</Button>}
