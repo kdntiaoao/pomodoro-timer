@@ -2,72 +2,41 @@ import { useEffect, useRef, useState } from "react";
 
 type Mode = "working" | "break";
 
+export type Duration = {
+  mins: number;
+  secs: number;
+};
+
 export const SECOND_IN_MILLISECONDS = 1000;
 export const MINUTE_IN_MILLISECONDS = 60 * SECOND_IN_MILLISECONDS;
 
 export function useTimer() {
   const [isRunning, setIsRunning] = useState(false);
   const [mode, setMode] = useState<Mode>("working");
-  const [workingDurationMins, setWorkingDurationMins] = useState(0);
-  const [workingDurationSecs, setWorkingDurationSecs] = useState(10);
-  const [breakDurationMins, setBreakDurationMins] = useState(0);
-  const [breakDurationSecs, setBreakDurationSecs] = useState(5);
+  const [workingDuration, setWorkingDuration] = useState<Duration>({
+    mins: 0,
+    secs: 10,
+  });
+  const [breakDuration, setBreakDuration] = useState<Duration>({
+    mins: 0,
+    secs: 5,
+  });
   const [remainingMs, setRemainingMs] = useState(
-    minutesAndSecondsToMs(workingDurationMins, workingDurationSecs),
+    minutesAndSecondsToMs(workingDuration.mins, workingDuration.secs),
   );
   const [pausedRemainingMs, setPausedRemainingMs] = useState(
-    minutesAndSecondsToMs(workingDurationMins, workingDurationSecs),
+    minutesAndSecondsToMs(workingDuration.mins, workingDuration.secs),
   );
   const animationFrameIdRef = useRef<number>(null);
 
   const workingDurationMs = minutesAndSecondsToMs(
-    workingDurationMins,
-    workingDurationSecs,
+    workingDuration.mins,
+    workingDuration.secs,
   );
   const breakDurationMs = minutesAndSecondsToMs(
-    breakDurationMins,
-    breakDurationSecs,
+    breakDuration.mins,
+    breakDuration.secs,
   );
-
-  const changeDurationMins = (mins: number) => {
-    if (mode === "working") {
-      setWorkingDurationMins(mins);
-    } else {
-      setBreakDurationMins(mins);
-    }
-    setRemainingMs(
-      minutesAndSecondsToMs(
-        mins,
-        (remainingMs % MINUTE_IN_MILLISECONDS) / SECOND_IN_MILLISECONDS,
-      ),
-    );
-    setPausedRemainingMs(
-      minutesAndSecondsToMs(
-        mins,
-        (pausedRemainingMs % MINUTE_IN_MILLISECONDS) / SECOND_IN_MILLISECONDS,
-      ),
-    );
-  };
-
-  const changeDurationSecs = (secs: number) => {
-    if (mode === "working") {
-      setWorkingDurationSecs(secs);
-    } else {
-      setBreakDurationSecs(secs);
-    }
-    setRemainingMs(
-      minutesAndSecondsToMs(
-        mode === "working" ? workingDurationMins : breakDurationMins,
-        secs,
-      ),
-    );
-    setPausedRemainingMs(
-      minutesAndSecondsToMs(
-        mode === "working" ? workingDurationMins : breakDurationMins,
-        secs,
-      ),
-    );
-  };
 
   const start = () => {
     setIsRunning(true);
@@ -80,6 +49,29 @@ export function useTimer() {
 
   const reset = () => {
     setIsRunning(false);
+    if (mode === "working") {
+      setRemainingMs(workingDurationMs);
+      setPausedRemainingMs(workingDurationMs);
+    } else {
+      setRemainingMs(breakDurationMs);
+      setPausedRemainingMs(breakDurationMs);
+    }
+  };
+
+  const changeWorkingDuration = (duration: Duration) => {
+    setWorkingDuration(duration);
+    if (mode === "working") {
+      setRemainingMs(minutesAndSecondsToMs(duration.mins, duration.secs));
+      setPausedRemainingMs(minutesAndSecondsToMs(duration.mins, duration.secs));
+    }
+  };
+
+  const changeBreakDuration = (duration: Duration) => {
+    setBreakDuration(duration);
+    if (mode === "break") {
+      setRemainingMs(minutesAndSecondsToMs(duration.mins, duration.secs));
+      setPausedRemainingMs(minutesAndSecondsToMs(duration.mins, duration.secs));
+    }
   };
 
   useEffect(() => {
@@ -133,11 +125,13 @@ export function useTimer() {
   return {
     isRunning,
     remainingMs,
-    changeDurationMins,
-    changeDurationSecs,
+    workingDuration,
+    breakDuration,
     start,
     pause,
     reset,
+    changeWorkingDuration,
+    changeBreakDuration,
   };
 }
 

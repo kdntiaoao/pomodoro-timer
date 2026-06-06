@@ -1,5 +1,6 @@
 "use client";
 
+import { SettingDialog } from "./setting-dialog";
 import {
   MINUTE_IN_MILLISECONDS,
   SECOND_IN_MILLISECONDS,
@@ -8,7 +9,17 @@ import {
 import { RefreshCw } from "lucide-react";
 
 export function Timer() {
-  const { remainingMs, isRunning, start, pause, reset } = useTimer();
+  const {
+    isRunning,
+    remainingMs,
+    workingDuration,
+    breakDuration,
+    start,
+    pause,
+    reset,
+    changeWorkingDuration,
+    changeBreakDuration,
+  } = useTimer();
 
   return (
     <div className="flex flex-col items-center gap-8">
@@ -50,8 +61,14 @@ export function Timer() {
           className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-sm transition active:scale-90"
           onClick={reset}
         >
-          <RefreshCw className="size-7" strokeWidth={2.5} />
+          <RefreshCw className="size-7" />
         </button>
+        <SettingDialog
+          workingDuration={workingDuration}
+          breakDuration={breakDuration}
+          changeWorkingDuration={changeWorkingDuration}
+          changeBreakDuration={changeBreakDuration}
+        />
       </div>
     </div>
   );
