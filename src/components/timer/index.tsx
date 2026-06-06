@@ -1,85 +1,58 @@
 "use client";
 
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "../ui/button";
-import {
   MINUTE_IN_MILLISECONDS,
   SECOND_IN_MILLISECONDS,
   useTimer,
 } from "./use-timer";
-
-const minuteOptions = Array.from({ length: 100 + 1 }, (_, i) => ({
-  value: i.toString(),
-  label: i.toString().padStart(2, "0"),
-}));
-const secondOptions = Array.from({ length: 60 }, (_, i) => ({
-  value: i.toString(),
-  label: i.toString().padStart(2, "0"),
-}));
+import { RefreshCw } from "lucide-react";
 
 export function Timer() {
-  const {
-    remainingMs,
-    isRunning,
-    changeDurationMins,
-    changeDurationSecs,
-    start,
-    pause,
-    reset,
-  } = useTimer();
+  const { remainingMs, isRunning, start, pause, reset } = useTimer();
 
   return (
-    <div>
-      <div className="flex gap-2 font-mono">
-        <Select
-          disabled={isRunning}
-          value={Math.floor(remainingMs / MINUTE_IN_MILLISECONDS).toString()}
-          onValueChange={(value) => changeDurationMins(Number(value))}
-        >
-          <SelectTrigger className="w-full max-w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {minuteOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Select
-          disabled={isRunning}
-          value={Math.floor(
+    <div className="flex flex-col items-center gap-8">
+      <div className="flex items-center gap-3 font-mono text-8xl font-semibold">
+        <span className="block">
+          {Math.floor(remainingMs / MINUTE_IN_MILLISECONDS)
+            .toString()
+            .padStart(2, "0")}
+        </span>
+        <span className="flex flex-col gap-5">
+          <span className="block size-3.5 bg-current"></span>
+          <span className="block size-3.5 bg-current"></span>
+        </span>
+        <span className="block">
+          {Math.floor(
             (remainingMs % MINUTE_IN_MILLISECONDS) / SECOND_IN_MILLISECONDS,
-          ).toString()}
-          onValueChange={(value) => changeDurationSecs(Number(value))}
-        >
-          <SelectTrigger className="w-full max-w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {secondOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          )
+            .toString()
+            .padStart(2, "0")}
+        </span>
       </div>
-      <Button onClick={start}>start</Button>
-      <Button onClick={pause}>pause</Button>
-      <Button onClick={reset}>reset</Button>
+
+      <div className="flex gap-3">
+        <button
+          type="button"
+          data-state={isRunning ? "running" : "paused"}
+          className="bg-primary text-primary-foreground group relative flex h-12 items-center justify-center overflow-hidden rounded-sm px-12 text-2xl font-medium transition active:scale-90"
+          onClick={isRunning ? pause : start}
+        >
+          <div className="translate-x-0 transition group-data-[state=running]:translate-x-[-180%]">
+            START
+          </div>
+          <div className="absolute translate-x-[180%] transition group-data-[state=running]:translate-x-0">
+            PAUSE
+          </div>
+        </button>
+        <button
+          type="button"
+          className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-sm transition active:scale-90"
+          onClick={reset}
+        >
+          <RefreshCw className="size-7" strokeWidth={2.5} />
+        </button>
+      </div>
     </div>
   );
 }
