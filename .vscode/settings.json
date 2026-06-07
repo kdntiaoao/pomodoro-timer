@@ -15,5 +15,10 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "tailwindCSS.classFunctions": ["clsx", "cn", "cva"]
+  "tailwindCSS.classFunctions": ["clsx", "cn", "cva"],
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "file": ".claude/commands/commit-message.md"
+    }
+  ]
 }

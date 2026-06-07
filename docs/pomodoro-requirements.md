@@ -80,6 +80,7 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
 ### 3.4 通知
 
 #### ブラウザ通知
+
 - 設定画面でトグル有効化
 - 初回オン時に `Notification.requestPermission()` を呼び出し(いきなり要求しない)
 - `granted` のみ設定値を ON、`denied` / `default` ならトグルはオフのまま
@@ -89,6 +90,7 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
   - 休憩終了: タイトル「休憩セッション完了」、本文「次の作業に取り組もう」
 
 #### 音声通知
+
 - 1 種類固定(設定で選択不可)
 - **Web Audio API で生成**(`OscillatorNode` + `GainNode` による短い beep、約 0.5 秒)
   - 音声ファイルを同梱しないためライセンス・PWA キャッシュ容量・ファイル取得の心配なし
@@ -100,6 +102,7 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
 - ブラウザの autoplay 制約に従い、ユーザー操作 (タイマー start) を経由した文脈でのみ再生される前提
 
 #### 通知タイミング
+
 - 作業セッション終了時
 - 休憩セッション終了時
 - ブラウザ通知と音声は**独立**(片方 OFF でももう片方は鳴る)
@@ -107,15 +110,18 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
 ### 3.5 履歴・統計
 
 #### 記録対象
+
 - **完了した作業セッションのみ** 記録
 - 中断・スキップしたセッションは記録しない
 
 #### 記録項目
+
 - 完了日時
 - 使用したプリセット名(スナップショット)
 - 作業時間(分)
 
 #### 表示
+
 - 過去 7 日間の棒グラフ(日別の完了ポモドーロ数)
 - 月間ヒートマップ(GitHub の草風、日別の完了数を濃淡で表現、**直近 13 週 = 約 3 ヶ月** を表示)
 - 日付境界は **ローカルタイムゾーンの 0 時** で区切る
@@ -131,12 +137,12 @@ running --フェーズ満了--> 通知発火 → 次フェーズへ
 日別の完了ポモドーロ数を 5 段階で表現:
 
 | 段階 | 完了数 | 色 token (Tailwind) |
-| ---- | ------ | -------------------- |
-| 0    | 0      | `bg-muted`           |
-| 1    | 1      | `bg-primary/20`      |
-| 2    | 2-3    | `bg-primary/40`      |
-| 3    | 4-5    | `bg-primary/60`      |
-| 4    | 6+     | `bg-primary`         |
+| ---- | ------ | ------------------- |
+| 0    | 0      | `bg-muted`          |
+| 1    | 1      | `bg-primary/20`     |
+| 2    | 2-3    | `bg-primary/40`     |
+| 3    | 4-5    | `bg-primary/60`     |
+| 4    | 6+     | `bg-primary`        |
 
 ### 3.6 設定画面
 
@@ -248,18 +254,18 @@ type Settings = {
 };
 
 // テーマは next-themes が独立して localStorage に保存(キーは `pomodoro:theme`)
-type ThemeMode = 'light' | 'dark' | 'system';
+type ThemeMode = "light" | "dark" | "system";
 ```
 
 ### localStorage キー
 
-| キー | 値 |
-|------|-----|
-| `pomodoro:presets` | `Stored<Preset[]>` |
-| `pomodoro:sessions` | `Stored<Session[]>` |
-| `pomodoro:settings` | `Stored<Settings>` |
-| `pomodoro:selectedPresetId` | `Stored<string>` |
-| `pomodoro:theme` | `ThemeMode` (next-themes が直接管理。`Stored<T>` ラッパーなし) |
+| キー                        | 値                                                             |
+| --------------------------- | -------------------------------------------------------------- |
+| `pomodoro:presets`          | `Stored<Preset[]>`                                             |
+| `pomodoro:sessions`         | `Stored<Session[]>`                                            |
+| `pomodoro:settings`         | `Stored<Settings>`                                             |
+| `pomodoro:selectedPresetId` | `Stored<string>`                                               |
+| `pomodoro:theme`            | `ThemeMode` (next-themes が直接管理。`Stored<T>` ラッパーなし) |
 
 ### スキーマ管理
 
