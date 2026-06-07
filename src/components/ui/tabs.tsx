@@ -6,15 +6,19 @@ import { Tabs as TabsPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 
+type Size = "default" | "lg";
+
 function Tabs({
   className,
   orientation = "horizontal",
+  size = "default",
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+}: React.ComponentProps<typeof TabsPrimitive.Root> & { size?: Size }) {
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
       data-orientation={orientation}
+      data-size={size}
       className={cn(
         "group/tabs flex gap-2 data-horizontal:flex-col",
         className,
@@ -25,7 +29,7 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  "group/tabs-list text-muted-foreground inline-flex w-fit items-center justify-center rounded-lg p-0.75 group-data-horizontal/tabs:h-8 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none",
+  "group/tabs-list text-muted-foreground inline-flex w-fit items-center justify-center rounded-lg p-0.75 group-data-horizontal/tabs:h-8 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col group-data-horizontal/tabs:group-data-[size=lg]/tabs:h-10 data-[variant=line]:rounded-none",
   {
     variants: {
       variant: {
@@ -67,6 +71,7 @@ function TabsTrigger({
         "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent",
         "data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground",
         "after:bg-foreground after:absolute after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:-bottom-1.25 group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100",
+        "group-data-[size=lg]/tabs:px-3 group-data-[size=lg]/tabs:text-2xl group-data-[size=lg]/tabs:font-bold group-data-[size=lg]/tabs:has-data-[icon=inline-end]:pr-2 group-data-[size=lg]/tabs:has-data-[icon=inline-start]:pl-2",
         className,
       )}
       {...props}
