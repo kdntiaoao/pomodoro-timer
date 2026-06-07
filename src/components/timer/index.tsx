@@ -23,7 +23,7 @@ export function Timer() {
 
   return (
     <div className="flex flex-col items-center gap-8">
-      <div className="flex items-center gap-3 font-mono text-8xl font-semibold">
+      <div className="flex items-center gap-3 font-mono text-[7rem] leading-none font-semibold">
         <span className="block">
           {Math.floor(remainingMs / MINUTE_IN_MILLISECONDS)
             .toString()
