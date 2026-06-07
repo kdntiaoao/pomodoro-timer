@@ -12,9 +12,11 @@ import { RotateCw } from "lucide-react";
 export function Timer() {
   const {
     isRunning,
+    mode,
     remainingMs,
     workingDuration,
     breakDuration,
+    changeMode,
     start,
     pause,
     reset,
@@ -24,7 +26,7 @@ export function Timer() {
 
   return (
     <div className="flex flex-col items-center gap-8">
-      <ModeTabs />
+      <ModeTabs value={mode} changeMode={changeMode} />
       <div className="flex items-center gap-3 font-mono text-[7rem] leading-none font-semibold">
         <span className="block">
           {Math.floor(remainingMs / MINUTE_IN_MILLISECONDS)

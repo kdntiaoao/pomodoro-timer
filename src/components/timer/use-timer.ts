@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-type Mode = "working" | "break";
+export type Mode = "working" | "break";
 
 export type Duration = {
   mins: number;
@@ -38,6 +38,20 @@ export function useTimer() {
     breakDuration.secs,
   );
 
+  const changeMode = useCallback(
+    (newMode: Mode) => {
+      setMode(newMode);
+      if (newMode === "working") {
+        setRemainingMs(workingDurationMs);
+        setPausedRemainingMs(workingDurationMs);
+      } else {
+        setRemainingMs(breakDurationMs);
+        setPausedRemainingMs(breakDurationMs);
+      }
+    },
+    [workingDurationMs, breakDurationMs],
+  );
+
   const start = () => {
     setIsRunning(true);
   };
@@ -49,9 +63,7 @@ export function useTimer() {
 
   const reset = () => {
     setIsRunning(false);
-    setMode("working");
-    setRemainingMs(workingDurationMs);
-    setPausedRemainingMs(workingDurationMs);
+    changeMode("working");
   };
 
   const changeWorkingDuration = (duration: Duration) => {
@@ -89,13 +101,9 @@ export function useTimer() {
       if (timeLeft < 0) {
         setIsRunning(false);
         if (mode === "working") {
-          setMode("break");
-          setRemainingMs(breakDurationMs);
-          setPausedRemainingMs(breakDurationMs);
+          changeMode("break");
         } else {
-          setMode("working");
-          setRemainingMs(workingDurationMs);
-          setPausedRemainingMs(workingDurationMs);
+          changeMode("working");
         }
         window.setTimeout(() => {
           setIsRunning(true);
@@ -116,13 +124,22 @@ export function useTimer() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [breakDurationMs, isRunning, mode, pausedRemainingMs, workingDurationMs]);
+  }, [
+    breakDurationMs,
+    changeMode,
+    isRunning,
+    mode,
+    pausedRemainingMs,
+    workingDurationMs,
+  ]);
 
   return {
     isRunning,
+    mode,
     remainingMs,
     workingDuration,
     breakDuration,
+    changeMode,
     start,
     pause,
     reset,
