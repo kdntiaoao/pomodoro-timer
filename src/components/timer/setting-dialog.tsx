@@ -56,7 +56,7 @@ export function SettingDialog(props: SettingDialogProps) {
             <Settings className="size-7.5" />
           </button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Setting</DialogTitle>
           </DialogHeader>
