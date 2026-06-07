@@ -1,5 +1,6 @@
 "use client";
 
+import { ModeTabs } from "./mode-tabs";
 import { SettingDialog } from "./setting-dialog";
 import {
   MINUTE_IN_MILLISECONDS,
@@ -23,6 +24,7 @@ export function Timer() {
 
   return (
     <div className="flex flex-col items-center gap-8">
+      <ModeTabs />
       <div className="flex items-center gap-3 font-mono text-[7rem] leading-none font-semibold">
         <span className="block">
           {Math.floor(remainingMs / MINUTE_IN_MILLISECONDS)
