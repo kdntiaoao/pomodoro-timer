@@ -6,7 +6,7 @@ import {
   SECOND_IN_MILLISECONDS,
   useTimer,
 } from "./use-timer";
-import { RefreshCw } from "lucide-react";
+import { RotateCw } from "lucide-react";
 
 export function Timer() {
   const {
@@ -58,10 +58,10 @@ export function Timer() {
         </button>
         <button
           type="button"
-          className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-sm transition active:scale-90"
+          className="bg-primary text-primary-foreground group flex size-12 items-center justify-center rounded-sm transition active:scale-90"
           onClick={reset}
         >
-          <RefreshCw className="size-7" />
+          <RotateCw className="size-7 transition group-active:rotate-45" />
         </button>
         <SettingDialog
           workingDuration={workingDuration}
