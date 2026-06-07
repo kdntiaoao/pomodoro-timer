@@ -49,13 +49,9 @@ export function useTimer() {
 
   const reset = () => {
     setIsRunning(false);
-    if (mode === "working") {
-      setRemainingMs(workingDurationMs);
-      setPausedRemainingMs(workingDurationMs);
-    } else {
-      setRemainingMs(breakDurationMs);
-      setPausedRemainingMs(breakDurationMs);
-    }
+    setMode("working");
+    setRemainingMs(workingDurationMs);
+    setPausedRemainingMs(workingDurationMs);
   };
 
   const changeWorkingDuration = (duration: Duration) => {
