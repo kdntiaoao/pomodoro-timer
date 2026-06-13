@@ -106,28 +106,28 @@ for (const relPath of copyTargets) {
   copyTarget(relPath);
 }
 
-const installResult = spawnSync("pnpm", ["install", "--frozen-lockfile"], {
-  cwd: worktreeDir,
-  stdio: "inherit",
-});
+// const installResult = spawnSync("pnpm", ["install", "--frozen-lockfile"], {
+//   cwd: worktreeDir,
+//   stdio: "inherit",
+// });
 
-const installFailed =
-  Boolean(installResult.error) ||
-  Boolean(installResult.signal) ||
-  installResult.status !== 0;
+// const installFailed =
+//   Boolean(installResult.error) ||
+//   Boolean(installResult.signal) ||
+//   installResult.status !== 0;
 
-if (installFailed) {
-  if (installResult.error) {
-    console.error(`Failed to spawn pnpm: ${installResult.error.message}`);
-  }
-  if (installResult.signal) {
-    console.error(`pnpm terminated by signal ${installResult.signal}`);
-  }
-  console.error("pnpm install failed → rolling back worktree");
-  spawnSync("git", ["worktree", "remove", "--force", worktreeDir], {
-    stdio: "inherit",
-  });
-  process.exit(installResult.status ?? 1);
-}
+// if (installFailed) {
+//   if (installResult.error) {
+//     console.error(`Failed to spawn pnpm: ${installResult.error.message}`);
+//   }
+//   if (installResult.signal) {
+//     console.error(`pnpm terminated by signal ${installResult.signal}`);
+//   }
+//   console.error("pnpm install failed → rolling back worktree");
+//   spawnSync("git", ["worktree", "remove", "--force", worktreeDir], {
+//     stdio: "inherit",
+//   });
+//   process.exit(installResult.status ?? 1);
+// }
 
 console.log(`✅ worktree ready: ${worktreeDir}`);
