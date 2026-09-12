@@ -1,0 +1,9 @@
+pre-commit:
+  jobs:
+    - name: format
+      run: pnpm run fmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+
+    - name: lint
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs}"
+      run: pnpm run lint {staged_files}
