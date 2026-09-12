@@ -1,9 +1,9 @@
-import { Button } from "./components/ui/button";
+import { Timer } from "./components/timer";
 
 function App() {
   return (
     <div className="h-screen flex items-center justify-center">
-      <Button>Click me!</Button>
+      <Timer />
     </div>
   );
 }
