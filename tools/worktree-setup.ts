@@ -41,13 +41,9 @@ if (fs.existsSync(worktreeDir)) {
 
 /** branch の存在判定 */
 const branchExists = () => {
-  const result = spawnSync(
-    "git",
-    ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`],
-    {
-      stdio: "ignore",
-    },
-  );
+  const result = spawnSync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
+    stdio: "ignore",
+  });
   return result.status === 0;
 };
 
