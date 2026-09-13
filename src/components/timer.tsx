@@ -8,11 +8,23 @@ const initialSeconds = 1 * 60;
 export function Timer() {
   const [status, setStatus] = useState<Status>("idle");
   const [startedTimestamp, setStartedTimestamp] = useState<number | null>(null);
+  const [elapsedMilliseconds, setElapsedMilliseconds] = useState(0);
   const [seconds, setSeconds] = useState(initialSeconds);
 
   const start = () => {
+    if (status === "progress") {
+      return;
+    }
     setStatus("progress");
     setStartedTimestamp(Date.now());
+  };
+
+  const pause = () => {
+    if (status !== "progress" || !startedTimestamp) {
+      return;
+    }
+    setStatus("paused");
+    setElapsedMilliseconds((prev) => prev + Date.now() - startedTimestamp);
   };
 
   useEffect(() => {
@@ -27,7 +39,7 @@ export function Timer() {
         return;
       }
 
-      const elapsedSeconds = (Date.now() - startedTimestamp) / 1000;
+      const elapsedSeconds = (elapsedMilliseconds + Date.now() - startedTimestamp) / 1000;
       setSeconds(Math.max(Math.trunc(initialSeconds - elapsedSeconds), 0));
 
       if (elapsedSeconds >= initialSeconds) {
@@ -45,7 +57,7 @@ export function Timer() {
     return () => {
       cancelAnimationFrame(req);
     };
-  }, [status, startedTimestamp]);
+  }, [status, startedTimestamp, elapsedMilliseconds]);
 
   return (
     <div>
@@ -54,6 +66,7 @@ export function Timer() {
       </p>
       <div>
         <Button onClick={start}>start</Button>
+        <Button onClick={pause}>pause</Button>
       </div>
     </div>
   );
