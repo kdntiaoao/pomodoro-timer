@@ -36,13 +36,9 @@ const worktreeDir = path.join(parentDir, `${repoName}-${safeBranch}`);
 
 /** ローカル branch の存在判定 */
 const branchExists = () => {
-  const result = spawnSync(
-    "git",
-    ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`],
-    {
-      stdio: "ignore",
-    },
-  );
+  const result = spawnSync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
+    stdio: "ignore",
+  });
   return result.status === 0;
 };
 
@@ -51,13 +47,9 @@ const branchExists = () => {
  * @returns 取得失敗時 null
  */
 const getBranchSha = () => {
-  const result = spawnSync(
-    "git",
-    ["rev-parse", "--short", `refs/heads/${branch}`],
-    {
-      encoding: "utf8",
-    },
-  );
+  const result = spawnSync("git", ["rev-parse", "--short", `refs/heads/${branch}`], {
+    encoding: "utf8",
+  });
   return result.status === 0 ? result.stdout.trim() : null;
 };
 
