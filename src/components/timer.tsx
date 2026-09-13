@@ -1,15 +1,24 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 type Status = "idle" | "progress" | "paused";
+type Mode = "working" | "break";
 
-const initialSeconds = 1 * 60;
+const WORKING_TIME = 25 * 60;
+const BREAK_TIME = 5 * 60;
 
 export function Timer() {
   const [status, setStatus] = useState<Status>("idle");
   const [startedTimestamp, setStartedTimestamp] = useState<number | null>(null);
   const [elapsedMilliseconds, setElapsedMilliseconds] = useState(0);
-  const [seconds, setSeconds] = useState(initialSeconds);
+  const [seconds, setSeconds] = useState(WORKING_TIME);
+  const [mode, setMode] = useState<Mode>("working");
+
+  const currentModeTime = mode === "working" ? WORKING_TIME : BREAK_TIME;
+  const min = Math.trunc(seconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const sec = (seconds % 60).toString().padStart(2, "0");
 
   const start = () => {
     if (status === "progress") {
@@ -27,6 +36,18 @@ export function Timer() {
     setElapsedMilliseconds((prev) => prev + Date.now() - startedTimestamp);
   };
 
+  const changeMode = useCallback(() => {
+    setStatus("idle");
+    setStartedTimestamp(null);
+    if (mode === "working") {
+      setSeconds(BREAK_TIME);
+      setMode("break");
+    } else {
+      setSeconds(WORKING_TIME);
+      setMode("working");
+    }
+  }, [mode]);
+
   useEffect(() => {
     if (status !== "progress") {
       return;
@@ -40,12 +61,10 @@ export function Timer() {
       }
 
       const elapsedSeconds = (elapsedMilliseconds + Date.now() - startedTimestamp) / 1000;
-      setSeconds(Math.max(Math.trunc(initialSeconds - elapsedSeconds), 0));
+      setSeconds(Math.max(Math.trunc(currentModeTime - elapsedSeconds), 0));
 
-      if (elapsedSeconds >= initialSeconds) {
-        setStatus("idle");
-        setStartedTimestamp(null);
-        setSeconds(initialSeconds);
+      if (elapsedSeconds >= currentModeTime) {
+        changeMode();
         return;
       }
 
@@ -57,12 +76,13 @@ export function Timer() {
     return () => {
       cancelAnimationFrame(req);
     };
-  }, [status, startedTimestamp, elapsedMilliseconds]);
+  }, [status, startedTimestamp, elapsedMilliseconds, changeMode, currentModeTime]);
 
   return (
     <div>
+      <p>{mode}</p>
       <p className="text-4xl">
-        {Math.trunc(seconds / 60)}:{(seconds % 60).toString().padStart(2, "0")}
+        {min}:{sec}
       </p>
       <div>
         <Button onClick={start}>start</Button>
